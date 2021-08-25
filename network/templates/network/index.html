@@ -1,0 +1,52 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<style>
+    #po{
+    border:1px;
+    border-style: solid;
+    border-radius:15px;
+    margin:20px;
+    padding:20px;
+    width: 1000px;
+    }
+</style>
+{% if user.is_authenticated %}
+    <div style="padding:20px;">
+    <h4>All Posts</h4>
+
+    <h5>New Post</h5>
+    <form action="{% url 'createPost' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group" style="width: 600px;">
+            <textarea class="form-control" name="Text" placeholder="What's on your mind?"></textarea>
+        </div>
+        <input class="btn btn-primary" type="submit" name="submit" value="Post">
+    </form>
+    </div>
+    {% for post in posts.object_list %}
+    <div id="po">
+    <h5><a href="{% url 'Profile' post.poster %}">{{post.poster}}</a></h5>
+    {% if post.poster == user.username %}
+    <h6><a href="{% url 'Edit' post.id%}">Edit</a></h6>
+    {% endif %}
+    <h6>{{ post.text }}</h6>
+    <small>{{post.date}}</small>
+    <h6>{{post.likesCount}} Likes</h6>
+    <h6><a href="{% url 'like' post.id %}">Like</a></h6>
+    <h6><a href="{% url 'unlike' post.id %}">Unlike</a></h6>
+    </div>
+
+    {% endfor %}
+
+    <ul class="pagination">
+    {% if posts.has_previous %}
+    <li class="page-item" ><a class="page-link" style="left:650px;" href="?page={{ posts.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    {% if posts.has_next %}
+    <li class="page-item" ><a class="page-link" style="left:700px;" href="?page={{ posts.next_page_number }}">Next</a></li>
+    {% endif %}
+    </ul>
+
+{% endif %}
+{% endblock %}
